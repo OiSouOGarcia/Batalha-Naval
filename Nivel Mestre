@@ -1,0 +1,184 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define TAM 10  // Tamanho do tabuleiro
+
+// 0 = água, 3 = navio, 1 = área de habilidade
+int tabuleiro[TAM][TAM];  
+
+// ------------------------------
+// Função: inicializarTabuleiro
+// Descrição: Preenche o tabuleiro com água (0)
+// ------------------------------
+void inicializarTabuleiro() {
+    for (int i = 0; i < TAM; i++)
+        for (int j = 0; j < TAM; j++)
+            tabuleiro[i][j] = 0;
+}
+
+// ------------------------------
+// Funções de verificação para navios
+// Retornam 1 se o navio pode ser colocado, 0 caso contrário
+// ------------------------------
+int podeColocarHorizontal(int linha, int coluna, int tamanho) {
+    if (coluna + tamanho > TAM) return 0;
+    for (int i = 0; i < tamanho; i++)
+        if (tabuleiro[linha][coluna + i] != 0) return 0;
+    return 1;
+}
+
+int podeColocarVertical(int linha, int coluna, int tamanho) {
+    if (linha + tamanho > TAM) return 0;
+    for (int i = 0; i < tamanho; i++)
+        if (tabuleiro[linha + i][coluna] != 0) return 0;
+    return 1;
+}
+
+int podeColocarDiagonal(int linha, int coluna, int tamanho) {
+    if (linha + tamanho > TAM || coluna + tamanho > TAM) return 0;
+    for (int i = 0; i < tamanho; i++)
+        if (tabuleiro[linha + i][coluna + i] != 0) return 0;
+    return 1;
+}
+
+// ------------------------------
+// Funções para colocar navios
+// ------------------------------
+void colocarNavioHorizontal(int tamanho) {
+    int linha, coluna;
+    do {
+        linha = rand() % TAM;
+        coluna = rand() % (TAM - tamanho + 1);
+    } while (!podeColocarHorizontal(linha, coluna, tamanho));
+
+    for (int i = 0; i < tamanho; i++)
+        tabuleiro[linha][coluna + i] = 3;
+}
+
+void colocarNavioVertical(int tamanho) {
+    int linha, coluna;
+    do {
+        linha = rand() % (TAM - tamanho + 1);
+        coluna = rand() % TAM;
+    } while (!podeColocarVertical(linha, coluna, tamanho));
+
+    for (int i = 0; i < tamanho; i++)
+        tabuleiro[linha + i][coluna] = 3;
+}
+
+void colocarNavioDiagonal(int tamanho) {
+    int linha, coluna;
+    do {
+        linha = rand() % (TAM - tamanho + 1);
+        coluna = rand() % (TAM - tamanho + 1);
+    } while (!podeColocarDiagonal(linha, coluna, tamanho));
+
+    for (int i = 0; i < tamanho; i++)
+        tabuleiro[linha + i][coluna + i] = 3;
+}
+
+// ------------------------------
+// Função: exibirTabuleiro
+// Descrição: Mostra o tabuleiro com símbolos claros
+// ~ = água, # = navio, X = habilidade
+// ------------------------------
+void exibirTabuleiro() {
+    printf("\nTabuleiro:\n   ");
+    for (int j = 0; j < TAM; j++) printf("%d ", j);
+    printf("\n");
+
+    for (int i = 0; i < TAM; i++) {
+        printf("%d  ", i);
+        for (int j = 0; j < TAM; j++) {
+            if (tabuleiro[i][j] == 0) printf("~ ");
+            else if (tabuleiro[i][j] == 3) printf("# ");
+            else if (tabuleiro[i][j] == 1) printf("X ");
+        }
+        printf("\n");
+    }
+}
+
+// ------------------------------
+// Função: aplicarHabilidade
+// Descrição: Aplica uma matriz de habilidade no tabuleiro
+// centroLinha, centroColuna = posição central da habilidade
+// habilidade[5][5] = matriz com padrão da habilidade
+// ------------------------------
+void aplicarHabilidade(int centroLinha, int centroColuna, int habilidade[5][5]) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            int linha = centroLinha - 2 + i;
+            int coluna = centroColuna - 2 + j;
+            if (linha >= 0 && linha < TAM && coluna >= 0 && coluna < TAM) {
+                if (habilidade[i][j] == 1)
+                    tabuleiro[linha][coluna] = 1;  // marca habilidade
+            }
+        }
+    }
+}
+
+// ------------------------------
+// Funções: padrões de habilidades
+// Cada função preenche uma matriz 5x5 com o padrão desejado
+// ------------------------------
+void habilidadeCone(int matriz[5][5]) {
+    for(int i = 0; i < 5; i++)
+        for(int j = 0; j < 5; j++)
+            matriz[i][j] = 0;
+
+    matriz[0][2] = 1;
+    matriz[1][1] = matriz[1][2] = matriz[1][3] = 1;
+    matriz[2][0] = matriz[2][1] = matriz[2][2] = matriz[2][3] = matriz[2][4] = 1;
+}
+
+void habilidadeCruz(int matriz[5][5]) {
+    for(int i = 0; i < 5; i++)
+        for(int j = 0; j < 5; j++)
+            matriz[i][j] = 0;
+
+    matriz[0][2] = 1;
+    matriz[1][0] = matriz[1][1] = matriz[1][2] = matriz[1][3] = matriz[1][4] = 1;
+    matriz[2][2] = 1;
+}
+
+void habilidadeOctaedro(int matriz[5][5]) {
+    for(int i = 0; i < 5; i++)
+        for(int j = 0; j < 5; j++)
+            matriz[i][j] = 0;
+
+    matriz[0][2] = 1;
+    matriz[1][1] = matriz[1][2] = matriz[1][3] = 1;
+    matriz[2][2] = 1;
+}
+
+// ------------------------------
+// Função principal
+// ------------------------------
+int main() {
+    srand(time(NULL));  // inicializa o gerador de números aleatórios
+
+    inicializarTabuleiro();
+
+    // Coloca navios no tabuleiro
+    colocarNavioHorizontal(4);
+    colocarNavioVertical(3);
+    colocarNavioDiagonal(3);
+    colocarNavioDiagonal(2);
+
+    // Cria matrizes de habilidades
+    int cone[5][5], cruz[5][5], octaedro[5][5];
+    habilidadeCone(cone);
+    habilidadeCruz(cruz);
+    habilidadeOctaedro(octaedro);
+
+    // Aplica habilidades em posições específicas
+    aplicarHabilidade(3, 3, cone);       // centro em (3,3)
+    aplicarHabilidade(6, 6, cruz);       // centro em (6,6)
+    aplicarHabilidade(2, 7, octaedro);   // centro em (2,7)
+
+    // Exibe o tabuleiro final
+    exibirTabuleiro();
+
+    return 0;
+}
