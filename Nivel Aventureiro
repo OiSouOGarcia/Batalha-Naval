@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define TAM 10
+
+int tabuleiro[TAM][TAM];
+
+void inicializarTabuleiro() {
+    for (int i = 0; i < TAM; i++) {
+        for (int j = 0; j < TAM; j++) {
+            tabuleiro[i][j] = 0;
+        }
+    }
+}
+
+int podeColocarHorizontal(int linha, int coluna, int tamanho) {
+    if (coluna + tamanho > TAM) return 0;
+    for (int i = 0; i < tamanho; i++) {
+        if (tabuleiro[linha][coluna + i] != 0) return 0;
+    }
+    return 1;
+}
+
+int podeColocarVertical(int linha, int coluna, int tamanho) {
+    if (linha + tamanho > TAM) return 0;
+    for (int i = 0; i < tamanho; i++) {
+        if (tabuleiro[linha + i][coluna] != 0) return 0;
+    }
+    return 1;
+}
+
+int podeColocarDiagonal(int linha, int coluna, int tamanho) {
+    if (linha + tamanho > TAM || coluna + tamanho > TAM) return 0;
+    for (int i = 0; i < tamanho; i++) {
+        if (tabuleiro[linha + i][coluna + i] != 0) return 0;
+    }
+    return 1;
+}
+
+void colocarNavioHorizontal(int tamanho) {
+    int linha, coluna;
+    do {
+        linha = rand() % TAM;
+        coluna = rand() % (TAM - tamanho + 1);
+    } while (!podeColocarHorizontal(linha, coluna, tamanho));
+
+    for (int i = 0; i < tamanho; i++) {
+        tabuleiro[linha][coluna + i] = 3;
+    }
+}
+
+void colocarNavioVertical(int tamanho) {
+    int linha, coluna;
+    do {
+        linha = rand() % (TAM - tamanho + 1);
+        coluna = rand() % TAM;
+    } while (!podeColocarVertical(linha, coluna, tamanho));
+
+    for (int i = 0; i < tamanho; i++) {
+        tabuleiro[linha + i][coluna] = 3;
+    }
+}
+
+void colocarNavioDiagonal(int tamanho) {
+    int linha, coluna;
+    do {
+        linha = rand() % (TAM - tamanho + 1);
+        coluna = rand() % (TAM - tamanho + 1);
+    } while (!podeColocarDiagonal(linha, coluna, tamanho));
+
+    for (int i = 0; i < tamanho; i++) {
+        tabuleiro[linha + i][coluna + i] = 3;
+    }
+}
+
+void exibirTabuleiro() {
+    printf("\nTabuleiro (~ = água, # = navio):\n   ");
+    for (int j = 0; j < TAM; j++) {
+        printf("%d ", j); // coordenadas das colunas
+    }
+    printf("\n");
+
+    for (int i = 0; i < TAM; i++) {
+        printf("%d  ", i); // coordenadas das linhas
+        for (int j = 0; j < TAM; j++) {
+            if (tabuleiro[i][j] == 0)
+                printf("~ ");
+            else
+                printf("# ");
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    srand(time(NULL));
+
+    inicializarTabuleiro();
+
+    colocarNavioHorizontal(4);
+    colocarNavioVertical(3);
+    colocarNavioDiagonal(3);
+    colocarNavioDiagonal(2);
+
+    exibirTabuleiro();
+
+    return 0;
+}
