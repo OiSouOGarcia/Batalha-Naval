@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+#define LINHAS 10
+#define COLUNAS 10
+
+int main() {
+    int tabuleiro[LINHAS][COLUNAS] = {0};
+
+    int navioVerticalLinha = 2;
+    int navioVerticalColuna = 4;
+    int navioVerticalTamanho = 3;
+
+    int navioHorizontalLinha = 6;
+    int navioHorizontalColuna = 1;
+    int navioHorizontalTamanho = 4;
+
+    // Posicionamento
+    for (int i = 0; i < navioVerticalTamanho; i++) {
+        tabuleiro[navioVerticalLinha + i][navioVerticalColuna] = 1;
+    }
+    
+    // Posicionamento
+    for (int j = 0; j < navioHorizontalTamanho; j++) {
+        tabuleiro[navioHorizontalLinha][navioHorizontalColuna + j] = 1;
+    }
+
+    // Navio vertical
+    printf("Navio Vertical:\n");
+    for (int i = 0; i < navioVerticalTamanho; i++) {
+        printf("Parte %d: Linha %d, Coluna %d\n", i + 1, navioVerticalLinha + i, navioVerticalColuna);
+    }
+
+    // Navio horizontal
+    printf("\nNavio horizontal:\n");
+    for (int j = 0; j < navioHorizontalTamanho; j++) {
+        printf("Parte %d: Linha %d, Coluna %d\n", j + 1, navioHorizontalLinha, navioHorizontalColuna + j);
+    }
+
+    return 0;
+}
